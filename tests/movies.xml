@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<System>
+    <Channels>
+        <ID>1</ID>
+        <Name>DVD</Name>
+        <PhysicalQuantity>20.03</PhysicalQuantity>
+        <PhysicalQuantitySymbol>0</PhysicalQuantitySymbol>
+        <Sensitivity>1.0</Sensitivity>
+    </Channels>
+    <Channels>
+        <ID>2</ID>
+        <Name>DVD2</Name>
+        <PhysicalQuantity>20.032</PhysicalQuantity>
+        <PhysicalQuantitySymbol>02</PhysicalQuantitySymbol>
+        <Sensitivity>1.02</Sensitivity>
+    </Channels>
+</System>
