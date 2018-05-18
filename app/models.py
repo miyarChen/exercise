@@ -13,13 +13,16 @@ from . import login_manager, db
 
 
 class Permission:
-    FOLLOW = 0x01
-    COMMENT = 0x02
+    # FOLLOW = 0x01
+    # COMMENT = 0x02
     WRITE_ARTICLES = 0x04
-    MODERATE = 8
     MODERATE_COMMENTS = 0x08
     ADMINISTER = 0x80
-
+    FOLLOW = 1
+    COMMENT = 2
+    WRITE = 4
+    MODERATE = 8
+    ADMIN = 16
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -99,7 +102,6 @@ class User(UserMixin, db.Model):
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)        # 注册日期
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)       # 最后访问日期
     avatar_hash = db.Column(db.String(32))
-    gavatar_hash = db.Column(db.String(32))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')

@@ -35,7 +35,8 @@ def server_shutdown():
 @main.route('/', methods=['GET', 'POST'])
 def index():
     form = PostForm()
-    if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
+    # if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
+    if current_user.can(Permission.WRITE) and form.validate_on_submit():
         post = Post(body=form.body.data,
                     author=current_user._get_current_object())
         db.session.add(post)
@@ -54,21 +55,7 @@ def index():
         error_out=False)
     posts = pagination.items
     return render_template('index.html', form=form, posts=posts,
-                           pagination=pagination)
-
-
-@main.route('/admin')
-@login_required
-@admin_required
-def for_admins_only():
-    return "For administrators!"
-
-
-@main.route('/moderator')
-@login_required
-@permission_required(Permission.MODERATE_COMMENTS)
-def for_moderators_only():
-    return "For comment moderators!"
+                           show_followed=show_followed, pagination=pagination)
 
 
 @main.route('/user/<username>')
@@ -82,7 +69,6 @@ def user(username):
     return render_template('user.html', user=user, posts=posts,
                            pagination=pagination)
 
-
 @main.route('/edit-profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
@@ -91,7 +77,9 @@ def edit_profile():
         current_user.name = form.name.data
         current_user.location = form.location.data
         current_user.about_me = form.about_me.data
-        db.session.add(current_user)
+        # db.session.add(current_user)
+        db.session.add(current_user._get_current_object())
+        db.session.commit()
         flash('Your profile has been updated.')
         return redirect(url_for('.user', username=current_user.username))
     form.name.data = current_user.name
@@ -115,6 +103,7 @@ def edit_profile_admin(id):
         user.location = form.location.data
         user.about_me = form.about_me.data
         db.session.add(user)
+        db.session.commit()
         flash('The profile has been updated.')
         return redirect(url_for('.user', username=user.username))
     form.email.data = user.email
@@ -162,8 +151,9 @@ def edit(id):
     if form.validate_on_submit():
         post.body = form.body.data
         db.session.add(post)
+        db.session.commit()
         flash('The post has been updated.')
-        return redirect(url_for('post', id=post.id))
+        return redirect(url_for('.post', id=post.id))
     form.body.data = post.body
     return render_template('edit_post.html', form=form)
 
@@ -287,5 +277,20 @@ def moderate_disable(id):
     db.session.commit()
     return redirect(url_for('.moderate',
                             page=request.args.get('page', 1, type=int)))
+
+@main.route('/admin')
+@login_required
+@admin_required
+def for_admins_only():
+    return "For administrators!"
+
+
+@main.route('/moderator')
+@login_required
+@permission_required(Permission.MODERATE_COMMENTS)
+def for_moderators_only():
+    return "For comment moderators!"
+
+
 
 
